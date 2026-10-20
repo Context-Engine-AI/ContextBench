@@ -29,6 +29,10 @@
 
 ## Overview 
 
+**Context-Engine-AI fork:** [CE returned-source evidence utilities](contrib/ce_evidence/README.md)
+add offline TOON decoding and frozen-source verification with synthetic tests.
+Upstream evaluation behavior is unchanged; these additions publish no benchmark results.
+
 LLM-based coding agents have shown strong performance on automated issue resolution benchmarks, yet existing evaluations largely focus on final task success, providing limited insight into how agents retrieve and use code context during problem solving.
 
 We introduce **ContextBench**, a process-oriented evaluation of context retrieval in coding agents. ContextBench consists of **1,136** issue-resolution tasks from 66 repositories across eight programming languages, each augmented with human-annotated gold contexts. We further implement an automated evaluation framework that tracks agent trajectories and measures context recall, precision, and efficiency throughout issue resolution.
