@@ -30,8 +30,8 @@ def test_only_matched_lines_inside_claimed_range_count() -> None:
         path = Path(tree, "source")
         path.write_text("header\n    alpha\n\n    beta\nfooter\n", encoding="utf-8")
         cases = (
-            ("alpha\n\nbeta\nfooter", (2, 4), [(2, 2), (4, 4)]),
-            ("alpha\n\nWRONG\nfooter", (2, 5), [(2, 2), (5, 5)]),
+            ("alpha\n\nbeta\nfooter", (2, 4), [(2, 2), (3, 3), (4, 4)]),
+            ("alpha\n\nWRONG\nfooter", (2, 5), [(2, 2), (3, 3), (5, 5)]),
             ("\n \t\n", (2, None), []),
             ("alpha", (1, None), []),
             ("header", (0, None), []),
@@ -66,6 +66,22 @@ def test_whitespace_only_controls_are_not_evidence() -> None:
         path = Path(tree, "source")
         path.write_bytes(b"\f\n\v\n\t\n")
         assert verified_lines(str(path), "\f\n\v\n\t\n", (1, None)) == []
+
+
+def test_blank_lines_need_matching_code_in_same_window() -> None:
+    with tempfile.TemporaryDirectory(prefix="source-lines-") as tree:
+        path = Path(tree, "source")
+        path.write_bytes(b"alpha\n\nnot-shown\n\nbeta\n")
+        assert verified_lines(str(path), "WRONG\n\nMISMATCH\n\nALSO_WRONG", (1, None)) == []
+        assert verified_lines(str(path), "alpha\n\nMISMATCH\n\nWRONG", (1, None)) == [(1, 1), (2, 2)]
+
+
+def test_newline_terminators_do_not_create_phantom_lines() -> None:
+    with tempfile.TemporaryDirectory(prefix="source-lines-") as tree:
+        path = Path(tree, "source")
+        path.write_bytes(b"\nalpha\n\n")
+        assert verified_lines(str(path), "\nalpha\n\n", (1, None)) == [(1, 1), (2, 2), (3, 3)]
+        assert verified_lines(str(path), "\nalpha\n\n\n", (1, None)) == [(1, 1), (2, 2), (3, 3)]
 
 
 if __name__ == "__main__":

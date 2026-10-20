@@ -8,10 +8,12 @@ metric definitions or its default evaluation pipeline.
 - `toon.py` decodes the JSON-like TOON forms emitted by CE. Quoted tokens must be
   consumed completely; array counts and table widths must match. Literal control
   characters supported by the CE producer remain valid inside quoted values.
-- `source_lines.py` credits only returned, nonblank lines that match a frozen
-  checkout at the claimed coordinates. A path or a claimed range alone is not
+- `source_lines.py` credits only returned source windows that match a frozen
+  checkout at the claimed coordinates. Each matching window must contain nonblank
+  code; its returned blank lines also count, just as they do in ordinary file reads.
+  Blank-only windows earn nothing. A path or a claimed range alone is not
   evidence that the agent saw the code. A mismatched line earns no credit; other
-  matching lines in a partial excerpt remain eligible.
+  matching windows in a partial excerpt remain eligible.
 
 Source matching normalizes CRLF to LF and ignores leading/trailing ASCII spaces
 and tabs to tolerate display indentation. Interior whitespace and all other
